@@ -46,6 +46,6 @@ cardSuit reverseSuit[] =
 {
   club,
   spade,
-  heart,
-  diamond
+  diamond,
+  heart
 };

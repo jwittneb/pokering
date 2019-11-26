@@ -6,8 +6,8 @@ class Card {
     cardSuit suit;
     cardValue value;
   public:
- //   int get_suit() { return suit; }
- //   int get_value() { return value; }
+    cardSuit get_suit() { return suit; }
+    cardValue get_value() { return value; }
 
     void print();
 
