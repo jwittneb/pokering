@@ -6,8 +6,8 @@ class Card {
     cardSuit suit;
     cardValue value;
   public:
-    cardSuit get_suit() { return suit; }
-    cardValue get_value() { return value; }
+    cardSuit get_suit() const { return suit; }
+    cardValue get_value() const { return value; }
 
     void print();
 

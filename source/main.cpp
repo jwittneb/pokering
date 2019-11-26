@@ -2,12 +2,14 @@
 #include "card.h"
 #include "deck.h"
 #include "board.h"
+#include "evaluator.h"
 #include <iostream>
 
 using namespace std;
 
 int main() {
 
+  Evaluator eval;
   Deck theDeck;
 
   Card *flop1 = new Card(ten, heart);
@@ -25,11 +27,11 @@ int main() {
 //  Card *myCard2 = theDeck.draw_card();
 //  myCard2->print();
 //  Board theBoard(flop1, flop2, flop3, turn, river);
-  Board theBoard(&theDeck);
+  Board theBoard(theDeck);
   theBoard.print_board();
   hand1->print();
   hand2->print();
-  cout << theBoard.fullboard_core_value(hand1, hand2) << endl;
+  cout << eval.core_value(theBoard, *hand1, *hand2) << endl;
   return 0;
 
 }
