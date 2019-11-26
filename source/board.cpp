@@ -20,6 +20,15 @@ Board::Board(Card *first, Card *second, Card *third, Card *fourth, Card *fifth) 
   boardCards[3] = fourth;
   boardCards[4] = fifth;
   numBoardCards = 5;
+
+  suitity[heart] = 0;
+  suitity[spade] = 0;
+  suitity[diamond] = 0;
+  suitity[club] = 0;
+
+  for (int i=0; i<5; ++i) {
+    suitity[reverseSuit[boardCards[i]->get_suit()]]++;
+  }
 }
 
 //Board::Board(Deck *theDeck, Card first, Card second, Card third, Card fourth, Card fifth) {
@@ -35,7 +44,7 @@ Board::Board(Deck *theDeck) {
 
   for (int i=0; i<5; ++i) {
     boardCards[i] = theDeck->draw_card();
-    suitity[reverseSuit[boardCards[i]->get_suit()]]++;
+    suitity[boardCards[i]->get_suit()]++;
   }
   numBoardCards = 5;
 }
@@ -47,30 +56,26 @@ void Board::print_board() {
 }
 
 //returns true if there is a flush between hand and board, false otherwise.
-bool Board::is_flush(Card *hand1, Card *hand2) {
+int Board::flush_suit(Card *hand1, Card *hand2) {
   suitity[hand1->get_suit()]++;
   suitity[hand2->get_suit()]++;
 
   for (int i=0; i<NUM_CARD_SUITS; ++i) {
-    std::cout << suitity[i] << std::endl;
-
     if (suitity[i] >= 5) {
-      for (int j=0; j<NUM_CARD_SUITS; ++j) {
-        suitity[j] = 0;
-      }
-      return true;
+      suitity[hand1->get_suit()]--;
+      suitity[hand2->get_suit()]--;
+      return i;
     }
   }
 
-  for (int j=0; j<NUM_CARD_SUITS; ++j) {
-    suitity[j] = 0;
-  }
-  return false;
+  suitity[hand1->get_suit()]--;
+  suitity[hand2->get_suit()]--;
+  return -1;
 }
 
 //returns the highest value that is in a straight from the hand and board.
 //If no straight exists, returns 0.
-int Board::straight_height(Card *hand1, Card *hand2) {
+int Board::straight_height(Card *hand1, Card *hand2, int suit = -1) {
   int numArray[NUM_CARD_VALUES];
   
   //zeroing numArray
@@ -78,16 +83,22 @@ int Board::straight_height(Card *hand1, Card *hand2) {
     numArray[i] = 0;
   }
 
-  numArray[hand1->get_value()]++;
-  numArray[hand2->get_value()]++;
+  if (suit == -1 || hand1->get_suit() == suit) {
+    numArray[hand1->get_value()]++;
+  }
+  if (suit == -1 || hand2->get_suit() == suit) {
+    numArray[hand2->get_value()]++;
+  }
 
   for (int i=0; i<get_num_boardCards(); ++i) {
-    numArray[boardCards[i]->get_value()]++;
+    if (boardCards[i]->get_suit() == suit || suit == -1) {
+      numArray[boardCards[i]->get_value()]++;
+    }
   }
 
   int max = 0;
   //covering the case for Ace to 5 straight
-  if (numArray[12] > 0 && numArray[0] > 0 && numArray[1] > 0 && numArray[2] > 0 && numArray[3] > 0 && numArray[4] > 0) {
+  if ((numArray[12]>0) && (numArray[0]>0) && (numArray[1]>0) && (numArray[2]>0) && (numArray[3]>0)) {
     max = 5;
   }
 
@@ -121,20 +132,24 @@ int Board::straight_height(Card *hand1, Card *hand2) {
 //in the event of a tie, another function must be called to determine which is stronger
 //TODO: make it so that either this function generalizes to <5 cards on board or make different
 //      function for partial board evaluation
-std::string Board::fullboard_hand_value(Card *hand1, Card *hand2) {
-  bool flush = is_flush(hand1, hand2);
+std::string Board::fullboard_core_value(Card *hand1, Card *hand2) {
+  int flush = flush_suit(hand1, hand2);
   int straight = straight_height(hand1, hand2);
   //int maxParity = max_parity(hand1, hand2);
 
-  if (flush && (straight > 0)) {
-    return "straight flush";
+  if ((flush > -1) && (straight > 0)) {
+    if (straight_height(hand1, hand2, flush)) {
+      return "straight flush";
+    }
+  }
  // } else if (maxParity == 4) {
  //   return "4 of a kind";
  // } else if (maxParity == 3) {
  //   if (is_boat(hand1, hand2)) {
  //     return "boat";
- //   }
-  } else if (flush) {
+ //   } 
+  
+  if (flush > -1) {
     return "flush";
   } else if (straight > 0) {
     return "straight";

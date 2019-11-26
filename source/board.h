@@ -22,11 +22,11 @@ class Board {
     
     int get_num_boardCards();
 
-    int straight_height(Card *hand1, Card* hand2);
-    bool is_flush(Card *hand1, Card *hand2);
+    int straight_height(Card *hand1, Card* hand2, int suit);
+    int flush_suit(Card *hand1, Card *hand2);
 
     void print_board();
-    std::string fullboard_hand_value(Card *hand1, Card *hand2);
+    std::string fullboard_core_value(Card *hand1, Card *hand2);
 
     ~Board();
 };
