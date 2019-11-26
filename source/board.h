@@ -22,6 +22,7 @@ class Board {
     
     int get_num_boardCards();
 
+    int max_pairity(Card *hand1, Card *hand2);
     int straight_height(Card *hand1, Card* hand2, int suit);
     int flush_suit(Card *hand1, Card *hand2);
 

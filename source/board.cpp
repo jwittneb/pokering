@@ -118,10 +118,69 @@ int Board::straight_height(Card *hand1, Card *hand2, int suit = -1) {
   return max;
 }
 
+// returns an int corresponding to the value of the hand
+// 0 pair -> 1
+// 1 pair -> 2
+// set -> 3
+// 4 of a kind -> 4
+// boat -> 5
+// 2 pair -> 6
+
+int Board::max_pairity(Card *hand1, Card *hand2) {
+  int numArray[NUM_CARD_VALUES];
+  
+  //zeroing numArray
+  for (int i=0; i<NUM_CARD_VALUES; ++i) {
+    numArray[i] = 0;
+  }
+
+  numArray[hand1->get_value()]++;
+  numArray[hand2->get_value()]++;
+
+  for (int i=0; i<get_num_boardCards(); ++i) {
+    numArray[boardCards[i]->get_value()]++;
+  }
+
+  int max = 0;
+  for (int i=0; i<NUM_CARD_VALUES; ++i) {
+    if (numArray[i] > max) {
+      max = numArray[i];
+    }
+  }
+
+  // there is a pair, check for 2 pairs
+  if (max == 2) {
+    int numPairs = 0;
+    for (int i=0; i<NUM_CARD_VALUES; ++i) {
+      if (numArray[i] == 2) {
+        numPairs++;
+      }
+    }
+    if (numPairs > 1) {
+      return 6;
+    } else {
+      return 2;
+    }
+  }
+
+  // there is a set, check for boat
+  if (max == 3) {
+    for (int i=0; i<NUM_CARD_VALUES; ++i) {
+      if (numArray[i] == 2) {
+        return 5;
+      }
+    }
+    return 3;
+  }
+
+  // else, return max value
+  return max;
+}
+
 //input: 2 cards that are in the player's hand.
 //output: one of the following strings, corresponding to the hand's value:
 //        "nothing"
-//        "pair"
+//        "1 pair"
 //        "2 pair"
 //        "set"
 //        "straight"
@@ -135,35 +194,28 @@ int Board::straight_height(Card *hand1, Card *hand2, int suit = -1) {
 std::string Board::fullboard_core_value(Card *hand1, Card *hand2) {
   int flush = flush_suit(hand1, hand2);
   int straight = straight_height(hand1, hand2);
-  //int maxParity = max_parity(hand1, hand2);
+  int maxPairity = max_pairity(hand1, hand2);
 
   if ((flush > -1) && (straight > 0)) {
     if (straight_height(hand1, hand2, flush)) {
       return "straight flush";
     }
-  }
- // } else if (maxParity == 4) {
- //   return "4 of a kind";
- // } else if (maxParity == 3) {
- //   if (is_boat(hand1, hand2)) {
- //     return "boat";
- //   } 
-  
-  if (flush > -1) {
+  } else if (maxPairity == 4) {
+    return "4 of a kind";
+  } else if (maxPairity == 5) {
+    return "boat";
+  } else if (flush > -1) {
     return "flush";
   } else if (straight > 0) {
     return "straight";
- // } else if (maxParity == 3) {
- //   return "set";
- // } else if (maxParity == 2) {
- //   if (num_pairs(hand1, hand2) >= 2) {
- //     return "2 pair";
- //   } else {
- //     return "pair";
- //   }
-  } else {
-    return "nothing";
-  }
+  } else if (maxPairity == 3) {
+    return "set";
+  } else if (maxPairity == 6) {
+    return "2 pair";
+  } else if (maxPairity == 2) {
+    return "1 pair";
+  } 
+  return "nothing";
 }
 
 Board::~Board() {
