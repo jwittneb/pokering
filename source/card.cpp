@@ -12,6 +12,10 @@ Card::Card(int ivalue, int isuit) {
   value = reverseVal[ivalue];
 }
 
+std::string Card::string_print() {
+  return cardValTypes[value] + " of " + suitTypes[suit];
+}
+
 void Card::print() {
   std::cout << cardValTypes[value] << " of " << suitTypes[suit] << std::endl;
 }

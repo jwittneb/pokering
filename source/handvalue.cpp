@@ -12,24 +12,8 @@ int HandValue::get_core() const {
   return coreValue;
 }
 
-int HandValue::get_tb1() {
-  return tiebreaks[0];
-}
-
-int HandValue::get_tb2() {
-  return tiebreaks[1];
-}
-
-int HandValue::get_tb3() {
-  return tiebreaks[2];
-}
-
-int HandValue::get_tb4() {
-  return tiebreaks[3];
-}
-
-int HandValue::get_tb5() {
-  return tiebreaks[4];
+int HandValue::get_tb(int index) const {
+  return tiebreaks[index];
 }
 
 HandValue::HandValue(Hand core, int tb1, int tb2, int tb3, int tb4, int tb5) {
@@ -47,10 +31,29 @@ bool HandValue::operator<(const HandValue &right) {
   if (coreValue < right.get_core()) {
     return true;
   } 
-  //else if (coreValue == right.get_core()) {
-    //TODO: implement
-  //} 
-
+  if (coreValue == right.get_core()) {
+    if (tiebreaks[0] < right.get_tb(0)) {
+      return true;
+    }
+    if (tiebreaks[0] == right.get_tb(0)) {
+      if (tiebreaks[1] < right.get_tb(1)) {
+        return true;
+      }
+      if (tiebreaks[1] == tiebreaks[1]) {
+        if (tiebreaks[2] < right.get_tb(2)) {
+          return true;
+        }
+        if (tiebreaks[2] == right.get_tb(2)) {
+          if (tiebreaks[3] == right.get_tb(3)) {
+            return true;
+          }
+          if (tiebreaks[3] == right.get_tb(3)) {
+            return (tiebreaks[4] < right.get_tb(4));
+          }
+        }
+      }
+    }
+  } 
   return false;
 }
 

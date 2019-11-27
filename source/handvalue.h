@@ -11,11 +11,7 @@ class HandValue {
     void set_tb(int tbindex, int tbval);
 
     int get_core() const;
-    int get_tb1();
-    int get_tb2();
-    int get_tb3();
-    int get_tb4();
-    int get_tb5();
+    int get_tb(int index) const;
 
     HandValue(Hand core = error, int tb1 = -1, int tb2 = -1, int tb3 = -1, int tb4 = -1, int tb5 = -1);
     ~HandValue();
