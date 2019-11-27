@@ -1,11 +1,11 @@
 #include "evaluator.h"
 
-void Evaluator::get_suitity(Board &theBoard, const Card &hand1, const Card &hand2) {
+void Evaluator::get_suitity(Board &theBoard, const Card *hand1, const Card *hand2) {
   for (int i=0; i<theBoard.get_num_boardcards(); ++i) {
     suitity[theBoard.get_boardcard(i)->get_suit()]++;
   }
-  suitity[hand1.get_suit()]++;
-  suitity[hand2.get_suit()]++;
+  suitity[hand1->get_suit()]++;
+  suitity[hand2->get_suit()]++;
 }
 
 void Evaluator::reset_suitity() {
@@ -14,23 +14,44 @@ void Evaluator::reset_suitity() {
   }
 }
 
-//returns true if there is a flush between hand and board, false otherwise.
-int Evaluator::flush_suit(Board &theBoard, const Card &hand1, const Card &hand2) {
+//mutates val to a flush hand if there is a flush between hand and board, makes it an error
+//HandValue otherwise.
+void Evaluator::flush_hand(Board &theBoard, const Card *hand1, const Card *hand2, HandValue &val) {
+  int numArray[NUM_CARD_VALUES];
+
+  for (int i=0; i<NUM_CARD_VALUES; ++i) {
+    numArray[i] = 0;
+  }
+  
   get_suitity(theBoard, hand1, hand2);
 
   for (int i=0; i<NUM_CARD_SUITS; ++i) {
     if (suitity[i] >= 5) {
-      reset_suitity();
-      return i;
+      val.set_core(flush);
+
+      for (int j=0; j<theBoard.get_num_boardcards(); ++j) {
+        if (theBoard.get_boardcard(i)->get_suit() == i) {
+          numArray[theBoard.get_boardcard(i)->get_value()]++;
+        }
+      }
+
+      int tiebreak = 0;
+      for (int j=NUM_CARD_SUITS-1; j>=0; --j) {
+        if ((numArray[j] > 0) && (tiebreak <= 4)) {
+          val.set_tb(tiebreak, j);
+          tiebreak++;
+        }
+      }
+      return;
     }
   }
   reset_suitity();
-  return -1;
+  val.set_core(error);
+  return;
 }
 
-//returns the highest value that is in a straight from the hand and board.
-//If no straight exists, returns 0.
-int Evaluator::straight_height(Board &theBoard, const Card &hand1, const Card &hand2, int suit = -1) {
+//mutates val to a straight HandValue if there is a straight, otherwise mutates it into an error HandValue.
+void Evaluator::straight_hand(Board &theBoard, const Card *hand1, const Card *hand2, HandValue &val, int suit = -1) {
   int numArray[NUM_CARD_VALUES];
   
   //zeroing numArray
@@ -38,11 +59,11 @@ int Evaluator::straight_height(Board &theBoard, const Card &hand1, const Card &h
     numArray[i] = 0;
   }
 
-  if (suit == -1 || hand1.get_suit() == suit) {
-    numArray[hand1.get_value()]++;
+  if (suit == -1 || hand1->get_suit() == suit) {
+    numArray[hand1->get_value()]++;
   }
-  if (suit == -1 || hand2.get_suit() == suit) {
-    numArray[hand2.get_value()]++;
+  if (suit == -1 || hand2->get_suit() == suit) {
+    numArray[hand2->get_value()]++;
   }
 
   for (int i=0; i<theBoard.get_num_boardcards(); ++i) {
@@ -70,18 +91,22 @@ int Evaluator::straight_height(Board &theBoard, const Card &hand1, const Card &h
       len = 0;
     }
   }
-  return max;
+  
+  //there was a straight if max >= 5
+  if (max >= 5) {
+    if (suit == -1) {
+      val.set_core(straight);
+    } else {
+      val.set_core(straightflush);
+    }
+    val.set_tb(0, max);
+  } else {
+    val.set_core(error);
+  }
 }
 
-// returns an int corresponding to the value of the hand
-// 0 pair -> 1
-// 1 pair -> 2
-// set -> 3
-// 4 of a kind -> 4
-// boat -> 5
-// 2 pair -> 6
-
-int Evaluator::max_pairity(Board &theBoard, const Card &hand1, const Card &hand2) {
+// mutates val to the corresponding HandValue for a pair/set/boat/2pair
+void Evaluator::pairity_hand(Board &theBoard, const Card *hand1, const Card *hand2, HandValue &val) {
   int numArray[NUM_CARD_VALUES];
   
   //zeroing numArray
@@ -89,8 +114,8 @@ int Evaluator::max_pairity(Board &theBoard, const Card &hand1, const Card &hand2
     numArray[i] = 0;
   }
 
-  numArray[hand1.get_value()]++;
-  numArray[hand2.get_value()]++;
+  numArray[hand1->get_value()]++;
+  numArray[hand2->get_value()]++;
 
   for (int i=0; i<theBoard.get_num_boardcards(); ++i) {
     numArray[theBoard.get_boardcard(i)->get_value()]++;
@@ -112,65 +137,83 @@ int Evaluator::max_pairity(Board &theBoard, const Card &hand1, const Card &hand2
       }
     }
     if (numPairs > 1) {
-      return 6;
+      val.set_core(twopair);
+      //2pair
     } else {
-      return 2;
+      val.set_core(onepair);
+      //1pair
     }
+    return;
   }
 
   // there is a set, check for boat
   if (max == 3) {
     for (int i=0; i<NUM_CARD_VALUES; ++i) {
       if (numArray[i] == 2) {
-        return 5;
-      }
+        //boat
+        val.set_core(boat);
+       // for (int j=NUM_CARD_VALUES-1; j>=0; --j) {
+       // }
+        return;
+      } 
     }
-    return 3;
+    //set
+    val.set_core(set);
+    return;
   }
 
-  // else, return max value
-  return max;
+  if (max == 4) {
+    // 4 of a kind
+    val.set_core(fourkind);
+    return;
+  }
+
+  // else, there is nothing
+  int tiebreak = 0;
+  val.set_core(nothing);
+  for (int i=NUM_CARD_VALUES-1; i>=0; --i) {
+    if ((numArray[i] > 0) && (tiebreak < 5)) {
+      val.set_tb(tiebreak, i);
+      tiebreak++;
+    }
+  }
 }
 
-//input: 2 cards that are in the player's hand.
-//output: one of the following strings, corresponding to the hand's value:
-//        "nothing"
-//        "1 pair"
-//        "2 pair"
-//        "set"
-//        "straight"
-//        "flush"
-//        "boat"
-//        "4 of a kind"
-//        "straight flush"
-//in the event of a tie, another function must be called to determine which is stronger
-//TODO: make it so that either this function generalizes to <5 cards on board or make different
-//      function for partial board evaluation
-std::string Evaluator::core_value(Board &theBoard, const Card &hand1, const Card &hand2) {
-  int flush = flush_suit(theBoard, hand1, hand2);
-  int straight = straight_height(theBoard, hand1, hand2);
-  int maxPairity = max_pairity(theBoard, hand1, hand2);
+//input: 2 cards that are in the player's hand, the board, and a HandValue reference that will be
+//       mutated to the HandValue corresponding to the board and hand cards.
+void Evaluator::find_handvalue(Board &theBoard, const Card *hand1, const Card *hand2, HandValue &val) {
+  HandValue temp1;
+  HandValue temp2;
+  
+  flush_hand(theBoard, hand1, hand2, temp1);
+  straight_hand(theBoard, hand1, hand2, temp2);
+  pairity_hand(theBoard, hand1, hand2, val);
 
-  if ((flush > -1) && (straight > 0)) {
-    if (straight_height(theBoard, hand1, hand2, flush)) {
-      return "straight flush";
+  if ((temp1.get_core() == flush) && (temp2.get_core() == straight)) {
+    get_suitity(theBoard, hand1, hand2);
+    for (int i=0; i<NUM_CARD_SUITS; ++i) {
+      if (suitity[i] >= 5) {
+        straight_hand(theBoard, hand1, hand2, temp2, i);
+        if (temp2.get_core() == straightflush) {
+          val.set_core(straightflush);
+        } else {
+          val.set_core(flush);
+        }
+      }
     }
-  } else if (maxPairity == 4) {
-    return "4 of a kind";
-  } else if (maxPairity == 5) {
-    return "boat";
-  } else if (flush > -1) {
-    return "flush";
-  } else if (straight > 0) {
-    return "straight";
-  } else if (maxPairity == 3) {
-    return "set";
-  } else if (maxPairity == 6) {
-    return "2 pair";
-  } else if (maxPairity == 2) {
-    return "1 pair";
-  } 
-  return "nothing";
+    reset_suitity();
+    return;
+  } else if (val.get_core() == fourkind) {
+    return;
+  } else if (val.get_core() == boat) {
+    return;
+  } else if (temp1.get_core() == flush) {
+    val.set_core(flush);
+    return;
+  } else if (temp2.get_core() == straight) {
+    val.set_core(straight);
+    return;
+  }
 }
 
 Evaluator::Evaluator() {

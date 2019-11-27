@@ -25,6 +25,19 @@ std::string cardValTypes[] =
   "ace"
 };
 
+std::string handTypes[] =
+{
+  "nothing",
+  "onepair",
+  "twopair",
+  "set",
+  "straight",
+  "flush",
+  "boat",
+  "fourkind",
+  "straightflush"
+};
+
 cardValue reverseVal[] = 
 {
   two,
@@ -49,3 +62,17 @@ cardSuit reverseSuit[] =
   diamond,
   heart
 };
+
+Hand reverseHand[] = 
+{
+  nothing,
+  onepair,
+  twopair,
+  set,
+  straight,
+  flush,
+  boat,
+  fourkind,
+  straightflush
+};
+
