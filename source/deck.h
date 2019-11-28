@@ -13,8 +13,7 @@ class Deck {
     Card *draw_card();
     int get_remaining_cards();
 
-    //TODO: implement
-    //void remove_card();
+    void remove_card(Card toRemove);
 
     Deck();
     ~Deck();

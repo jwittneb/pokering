@@ -15,6 +15,15 @@ void Evaluator::reset_suitity() {
   }
 }
 
+bool Evaluator::operator()(RangeEntry entry1, RangeEntry entry2) {
+  HandValue val1;
+  HandValue val2;
+  find_handvalue(*iBoard, entry1.get_card1(), entry1.get_card2(), val1);
+  find_handvalue(*iBoard, entry2.get_card1(), entry2.get_card2(), val2);
+  return (val1 < val2);
+}
+
+
 //mutates val to a flush hand if there is a flush between hand and board, makes it an error
 //HandValue otherwise.
 void Evaluator::flush_hand(Board &theBoard, const Card *hand1, const Card *hand2, HandValue &val) {
@@ -152,8 +161,15 @@ void Evaluator::pairity_hand(Board &theBoard, const Card *hand1, const Card *han
 
     for (int j=NUM_CARD_VALUES-1; j>=0; --j) {
       if (numArray[j] == 1) {
-        val.set_tb(tiebreak, j);
-        break;
+        if (numPairs > 1) {
+          val.set_tb(tiebreak, j);
+          break;
+        } else {
+          if (tiebreak < 4) {
+            val.set_tb(tiebreak, j);
+            tiebreak++;
+          }
+        }
       }
     }
 
@@ -200,9 +216,17 @@ void Evaluator::pairity_hand(Board &theBoard, const Card *hand1, const Card *han
   }
 
   if (max == 4) {
-    //TODO
-    // 4 of a kind
     val.set_core(fourkind);
+    bool singleton = false;
+    for (int i=NUM_CARD_VALUES-1; i>=0; --i) {
+      if (numArray[i] == 4) {
+        val.set_tb(0, i);
+      }
+      if ((numArray[i] == 1) && (!singleton)) {
+        val.set_tb(1, i);
+        singleton = true;
+      }
+    }
     return;
   }
 
@@ -262,10 +286,11 @@ void Evaluator::find_handvalue(Board &theBoard, const Card *hand1, const Card *h
   }
 }
 
-Evaluator::Evaluator() {
+Evaluator::Evaluator(Board *theBoard) {
   for (int i=0; i<NUM_CARD_SUITS; ++i) {
     suitity[i] = 0;
   }
+  iBoard = theBoard;
 }
 
 Evaluator::~Evaluator() {}

@@ -7,16 +7,13 @@ class RangeEntry {
   Card *card1;
   Card *card2;
 
-  bool inRange;
-
   public:
-    bool is_in_range();
-    Card *get_entry_cards();
+    Card *get_card1();
+    Card *get_card2();
 
-    RangeEntry(Card *card1, Card *card2);
-    RangeEntry(Card *card1, Card *card2, bool inRange);
+    RangeEntry();
+    RangeEntry(Card card1, Card card2);
     ~RangeEntry();
-
 };
 
 #endif

@@ -1,4 +1,5 @@
 #include "handvalue.h"
+#include <iostream>
 
 void HandValue::set_core(Hand core) {
   coreValue = core;
@@ -27,7 +28,20 @@ HandValue::HandValue(Hand core, int tb1, int tb2, int tb3, int tb4, int tb5) {
     
 HandValue::~HandValue() {}
 
+bool HandValue::operator==(const HandValue &right) {
+  if (coreValue == right.get_core()) {
+    for (int i=0; i<5; ++i) {
+      if (tiebreaks[i] != right.get_tb(i)) {
+        return false;
+      }
+    }
+    return true;
+  }
+  return false;
+}
+
 bool HandValue::operator<(const HandValue &right) {
+  std::cout << "We reached here" << std::endl;
   if (coreValue < right.get_core()) {
     return true;
   } 
@@ -39,12 +53,12 @@ bool HandValue::operator<(const HandValue &right) {
       if (tiebreaks[1] < right.get_tb(1)) {
         return true;
       }
-      if (tiebreaks[1] == tiebreaks[1]) {
+      if (tiebreaks[1] == right.get_tb(1)) {
         if (tiebreaks[2] < right.get_tb(2)) {
           return true;
         }
         if (tiebreaks[2] == right.get_tb(2)) {
-          if (tiebreaks[3] == right.get_tb(3)) {
+          if (tiebreaks[3] < right.get_tb(3)) {
             return true;
           }
           if (tiebreaks[3] == right.get_tb(3)) {
@@ -53,7 +67,7 @@ bool HandValue::operator<(const HandValue &right) {
         }
       }
     }
-  } 
+  }
   return false;
 }
 

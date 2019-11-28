@@ -16,11 +16,21 @@ Card *Deck::draw_card() {
   return deckCards[remainingCards];
 }
 
+//This function is used when we want specific hole cards/board cards
+void Deck::remove_card(Card toRemove) {
+  for (int i=0; i<deckCards.size(); ++i) {
+    if ((deckCards[i]->get_value() == toRemove.get_value()) &&
+        (deckCards[i]->get_suit() == toRemove.get_suit())) {
+      deckCards.erase(deckCards.begin() + i);
+    }
+  }
+}
+
 Deck::Deck() {
 
   //Put all 52 cards into the deck
-  for (int i=0; i<13; ++i) {
-    for (int j=0; j<4; ++j) {
+  for (int i=0; i<NUM_CARD_VALUES; ++i) {
+    for (int j=0; j<NUM_CARD_SUITS; ++j) {
       Card *toInsert = new Card(i,j);
       deckCards.push_back(toInsert);
     }

@@ -17,7 +17,8 @@ class Board {
     Board(Card *first, Card *second, Card *third, Card *fourth, Card *fifth);
     //Board(Deck *theDeck, Card first, Card second, Card third, Card fourth, Card fifth);
     Board(Deck &theDeck);
-    
+    Board();
+
     int get_num_boardcards();
     Card *get_boardcard(int i);
 

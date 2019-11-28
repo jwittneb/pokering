@@ -17,6 +17,7 @@ class HandValue {
     ~HandValue();
 
     bool operator<(const HandValue &right);
+    bool operator==(const HandValue &right);
 };
 
 #endif

@@ -32,6 +32,13 @@ Card *Board::get_boardcard(int i) {
   return boardCards[i];
 }
 
+Board::Board() {
+  for (int i=0; i<5; ++i) {
+    boardCards[i] = new Card(ace, diamond);
+  }
+  numBoardCards = 5;
+}
+
 Board::Board(Deck &theDeck) {
   for (int i=0; i<5; ++i) {
     boardCards[i] = theDeck.draw_card();
