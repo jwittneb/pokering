@@ -16,6 +16,12 @@ RangeEntry::RangeEntry(Card icard1, Card icard2) {
 //  inRange = true;
 //}
 
+RangeEntry::RangeEntry() {
+  card1 = NULL;
+  card2 = NULL;
+}
+
+
 Card *RangeEntry::get_card1() {
   return card1;
 }

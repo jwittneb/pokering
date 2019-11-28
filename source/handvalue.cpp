@@ -41,7 +41,6 @@ bool HandValue::operator==(const HandValue &right) {
 }
 
 bool HandValue::operator<(const HandValue &right) {
-  std::cout << "We reached here" << std::endl;
   if (coreValue < right.get_core()) {
     return true;
   } 

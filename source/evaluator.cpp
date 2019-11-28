@@ -1,9 +1,9 @@
 #include "evaluator.h"
 #include <iostream>
 
-void Evaluator::get_suitity(Board &theBoard, const Card *hand1, const Card *hand2) {
-  for (int i=0; i<theBoard.get_num_boardcards(); ++i) {
-    suitity[theBoard.get_boardcard(i)->get_suit()]++;
+void Evaluator::get_suitity(Board *theBoard, const Card *hand1, const Card *hand2) {
+  for (int i=0; i<theBoard->get_num_boardcards(); ++i) {
+    suitity[theBoard->get_boardcard(i)->get_suit()]++;
   }
   suitity[hand1->get_suit()]++;
   suitity[hand2->get_suit()]++;
@@ -18,15 +18,15 @@ void Evaluator::reset_suitity() {
 bool Evaluator::operator()(RangeEntry entry1, RangeEntry entry2) {
   HandValue val1;
   HandValue val2;
-  find_handvalue(*iBoard, entry1.get_card1(), entry1.get_card2(), val1);
-  find_handvalue(*iBoard, entry2.get_card1(), entry2.get_card2(), val2);
+  find_handvalue(iBoard, entry1.get_card1(), entry1.get_card2(), val1);
+  find_handvalue(iBoard, entry2.get_card1(), entry2.get_card2(), val2);
   return (val1 < val2);
 }
 
 
 //mutates val to a flush hand if there is a flush between hand and board, makes it an error
 //HandValue otherwise.
-void Evaluator::flush_hand(Board &theBoard, const Card *hand1, const Card *hand2, HandValue &val) {
+void Evaluator::flush_hand(Board *theBoard, const Card *hand1, const Card *hand2, HandValue &val) {
   int numArray[NUM_CARD_VALUES];
 
   for (int i=0; i<NUM_CARD_VALUES; ++i) {
@@ -39,9 +39,9 @@ void Evaluator::flush_hand(Board &theBoard, const Card *hand1, const Card *hand2
     if (suitity[i] >= 5) {
       val.set_core(flush);
 
-      for (int j=0; j<theBoard.get_num_boardcards(); ++j) {
-        if (theBoard.get_boardcard(j)->get_suit() == i) {
-          numArray[theBoard.get_boardcard(j)->get_value()]++;
+      for (int j=0; j<theBoard->get_num_boardcards(); ++j) {
+        if (theBoard->get_boardcard(j)->get_suit() == i) {
+          numArray[theBoard->get_boardcard(j)->get_value()]++;
         }
       }
 
@@ -59,6 +59,7 @@ void Evaluator::flush_hand(Board &theBoard, const Card *hand1, const Card *hand2
           tiebreak++;
         }
       }
+      reset_suitity();
       return;
     }
   }
@@ -68,7 +69,7 @@ void Evaluator::flush_hand(Board &theBoard, const Card *hand1, const Card *hand2
 }
 
 //mutates val to a straight HandValue if there is a straight, otherwise mutates it into an error HandValue.
-void Evaluator::straight_hand(Board &theBoard, const Card *hand1, const Card *hand2, HandValue &val, int suit = -1) {
+void Evaluator::straight_hand(Board *theBoard, const Card *hand1, const Card *hand2, HandValue &val, int suit = -1) {
   int numArray[NUM_CARD_VALUES];
   
   //zeroing numArray
@@ -83,9 +84,9 @@ void Evaluator::straight_hand(Board &theBoard, const Card *hand1, const Card *ha
     numArray[hand2->get_value()]++;
   }
 
-  for (int i=0; i<theBoard.get_num_boardcards(); ++i) {
-    if (theBoard.get_boardcard(i)->get_suit() == suit || suit == -1) {
-      numArray[theBoard.get_boardcard(i)->get_value()]++;
+  for (int i=0; i<theBoard->get_num_boardcards(); ++i) {
+    if (theBoard->get_boardcard(i)->get_suit() == suit || suit == -1) {
+      numArray[theBoard->get_boardcard(i)->get_value()]++;
     }
   }
 
@@ -123,7 +124,7 @@ void Evaluator::straight_hand(Board &theBoard, const Card *hand1, const Card *ha
 }
 
 // mutates val to the corresponding HandValue for a pair/set/boat/2pair
-void Evaluator::pairity_hand(Board &theBoard, const Card *hand1, const Card *hand2, HandValue &val) {
+void Evaluator::pairity_hand(Board *theBoard, const Card *hand1, const Card *hand2, HandValue &val) {
   int numArray[NUM_CARD_VALUES];
   
   //zeroing numArray
@@ -134,8 +135,8 @@ void Evaluator::pairity_hand(Board &theBoard, const Card *hand1, const Card *han
   numArray[hand1->get_value()]++;
   numArray[hand2->get_value()]++;
 
-  for (int i=0; i<theBoard.get_num_boardcards(); ++i) {
-    numArray[theBoard.get_boardcard(i)->get_value()]++;
+  for (int i=0; i<theBoard->get_num_boardcards(); ++i) {
+    numArray[theBoard->get_boardcard(i)->get_value()]++;
   }
 
   int max = 0;
@@ -242,7 +243,7 @@ void Evaluator::pairity_hand(Board &theBoard, const Card *hand1, const Card *han
 
 //input: 2 cards that are in the player's hand, the board, and a HandValue reference that will be
 //       mutated to the HandValue corresponding to the board and hand cards.
-void Evaluator::find_handvalue(Board &theBoard, const Card *hand1, const Card *hand2, HandValue &val) {
+void Evaluator::find_handvalue(Board *theBoard, const Card *hand1, const Card *hand2, HandValue &val) {
   HandValue temp1;
   HandValue temp2;
   HandValue temp3;

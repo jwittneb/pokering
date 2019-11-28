@@ -31,8 +31,11 @@ Range::Range() {
 }
 
 void Range::sort_range(Evaluator &theEvaluator) {
-  std::cout << "Good so far" << std::endl;
   std::sort(holdingsInRange.begin(), holdingsInRange.end(), theEvaluator);
+}
+
+std::vector<RangeEntry> Range::return_holdings() {
+  return holdingsInRange;
 }
 
 void Range::remove_from_range(Card &toRemove) {
