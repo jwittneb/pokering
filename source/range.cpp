@@ -34,9 +34,22 @@ void Range::sort_range(Evaluator &theEvaluator) {
   std::sort(holdingsInRange.begin(), holdingsInRange.end(), theEvaluator);
 }
 
-std::vector<RangeEntry> Range::return_holdings() {
-  return holdingsInRange;
+void Range::cold_bet_range(Evaluator &theEvaluator) {
+  int numBluffs = (rangeSize*RIVER_BET_PERCENT*RIVER_BLUFF_PERCENT)/10000;
+  int numValueBets = (rangeSize*RIVER_BET_PERCENT*(100-RIVER_BLUFF_PERCENT))/10000;
+
+  sort_range(theEvaluator);
+  
+  //this is a bit primitive, make it better later
+  for (int i=numBluffs; i<rangeSize-numValueBets; ++i) {
+    holdingsInRange[i] = holdingsInRange.back();
+    holdingsInRange.pop_back();
+  }
+
+  rangeSize = numBluffs + numValueBets;
+  sort_range(theEvaluator);
 }
+
 
 void Range::remove_from_range(Card &toRemove) {
   //does not maintain order

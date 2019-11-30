@@ -3,19 +3,19 @@
 #include "rangeentry.h"
 #include <vector>
 #include "evaluator.h"
+#include "constants.h"
 
 class Range {
 
+  std::vector<RangeEntry> holdingsInRange;
   int rangeSize;
 
   public:
-    RangeEntry get_holding_in_range(int i);
-    std::vector<RangeEntry> holdingsInRange;
-
+    void cold_bet_range(Evaluator &theEvaluator);
     void sort_range(Evaluator &theEvaluator);
-    int get_rangesize();
 
-    std::vector<RangeEntry> return_holdings();
+    RangeEntry get_holding_in_range(int i);
+    int get_rangesize();
     void remove_from_range(Card &toRemove);
    // void remove_from_range(Card &toRemove1, Card &toRemove2);
 

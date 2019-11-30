@@ -4,6 +4,7 @@
 RangeEntry::RangeEntry(Card icard1, Card icard2) {
   card1 = new Card(icard1.get_value(), icard1.get_suit());
   card2 = new Card(icard2.get_value(), icard2.get_suit());
+  action = "";
 }
     
 //RangeEntry::RangeEntry(Card *icard1, Card *icard2, bool iinRange) {
@@ -19,6 +20,7 @@ RangeEntry::RangeEntry(Card icard1, Card icard2) {
 RangeEntry::RangeEntry() {
   card1 = NULL;
   card2 = NULL;
+  action = "";
 }
 
 

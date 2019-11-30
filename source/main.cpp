@@ -14,42 +14,57 @@ using namespace std;
 int main() {
   Deck theDeck;
 
-  //Card *flop1 = theDeck.draw_card();
-  //Card *flop2 = theDeck.draw_card();
-  //Card *flop3 = theDeck.draw_card();
-  //Card *turn = theDeck.draw_card();
-  //Card *river = theDeck.draw_card();
+  Card *flop1 = theDeck.draw_card();
+  Card *flop2 = theDeck.draw_card();
+  Card *flop3 = theDeck.draw_card();
+  Card *turn = theDeck.draw_card();
+  Card *river = theDeck.draw_card();
 
-  Card *flop1 = new Card(ace, diamond);
-  Card *flop2 = new Card(eight, club);
-  Card *flop3 = new Card(ace, spade);
-  Card *turn = new Card(king, diamond);
-  Card *river = new Card(four, diamond);
+  //Card *flop1 = new Card(ace, diamond);
+  //Card *flop2 = new Card(eight, club);
+  //Card *flop3 = new Card(ace, spade);
+  //Card *turn = new Card(king, diamond);
+  //Card *river = new Card(four, diamond);
 
   Board *theBoard = new Board(flop1, flop2, flop3, turn, river);
   
-  //RangeEntry entry1(Card(nine, club), Card(jack, club));
-  //RangeEntry entry2(Card(king, club), Card(six, spade));
-  //RangeEntry entry3(Card(two, club), Card(ten, diamond));
-  //RangeEntry entry4(Card(nine,club), Card(nine, diamond));
-  //vector<RangeEntry> entries;
-  //entries.push_back(entry1);
-  //entries.push_back(entry2);
-  //entries.push_back(entry3);
-  //entries.push_back(entry4);
+  RangeEntry entry1(Card(nine, club), Card(jack, club));
+  RangeEntry entry2(Card(king, club), Card(six, spade));
+  RangeEntry entry3(Card(two, club), Card(ten, diamond));
+  RangeEntry entry4(Card(nine,club), Card(nine, diamond)); 
+  RangeEntry entry5(Card(nine,club), Card(ten, club));
+  RangeEntry entry6(Card(nine,club), Card(king, club));
+  RangeEntry entry7(Card(nine,club), Card(queen, club));
+  RangeEntry entry8(Card(nine,club), Card(ace, diamond));
+  RangeEntry entry9(Card(nine,club), Card(ace, club));
+  RangeEntry entry10(Card(two, spade), Card(nine, diamond));
+  
+  vector<RangeEntry> entries;
+  entries.push_back(entry1);
+  entries.push_back(entry2);
+  entries.push_back(entry3);
+  entries.push_back(entry4);
+  entries.push_back(entry5);
+  entries.push_back(entry6);
+  entries.push_back(entry7);
+  entries.push_back(entry8);
+  entries.push_back(entry9);
+  entries.push_back(entry10);
 
- // Range theRange(entries);
-  Range theRange;
+  Range theRange(entries);
+  //Range theRange;
 
-  theRange.remove_from_range(*flop1);
-  theRange.remove_from_range(*flop2);
-  theRange.remove_from_range(*flop3);
-  theRange.remove_from_range(*turn);
-  theRange.remove_from_range(*river);
+//  theRange.remove_from_range(*flop1);
+//  theRange.remove_from_range(*flop2);
+//  theRange.remove_from_range(*flop3);
+//  theRange.remove_from_range(*turn);
+//  theRange.remove_from_range(*river);
   
 
   Evaluator theEvaluator(theBoard);
-  theRange.sort_range(theEvaluator);
+  theRange.cold_bet_range(theEvaluator);
+  //theRange.sort_range(theEvaluator);
+  
 
   for (int i=0; i<theRange.get_rangesize(); ++i) {
     RangeEntry temp = theRange.get_holding_in_range(i);
