@@ -63,7 +63,7 @@ cardSuit reverseSuit[] =
   heart
 };
 
-Hand reverseHand[] = 
+HandCore reverseHand[] = 
 {
   nothing,
   onepair,

@@ -29,7 +29,7 @@ enum cardValue {
   ace
 };
 
-enum Hand {
+enum HandCore {
   error = -1,
   nothing = 0,
   onepair,
@@ -48,5 +48,5 @@ extern std::string handTypes[9];
 
 extern cardValue reverseVal[NUM_CARD_VALUES];
 extern cardSuit reverseSuit[NUM_CARD_SUITS];
-extern Hand reverseHand[9];
+extern HandCore reverseHand[9];
 #endif

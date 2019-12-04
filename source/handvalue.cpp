@@ -1,7 +1,7 @@
 #include "handvalue.h"
 #include <iostream>
 
-void HandValue::set_core(Hand core) {
+void HandValue::set_core(HandCore core) {
   coreValue = core;
 }
 
@@ -17,7 +17,7 @@ int HandValue::get_tb(int index) const {
   return tiebreaks[index];
 }
 
-HandValue::HandValue(Hand core, int tb1, int tb2, int tb3, int tb4, int tb5) {
+HandValue::HandValue(HandCore core, int tb1, int tb2, int tb3, int tb4, int tb5) {
   coreValue = core;
   tiebreaks[0] = tb1;
   tiebreaks[1] = tb2;
