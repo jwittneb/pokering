@@ -38,6 +38,30 @@ void Hand::reset_suitity() {
   }
 }
 
+int Hand::pot_improv_1(Board *theBoard) {
+  int retval = 0;
+  if (theBoard != NULL) {
+    //Evaluating potential improvement over a turn or river draw
+    
+    //The best way to cycle through all possible draws atm is to create a new deck and remove all the
+    //cards in hand/on the board
+    Deck restDeck;
+    restDeck.remove_card(*hand1);
+    restDeck.remove_card(*hand2);
+
+    int numboardcards = theBoard->get_num_boardcards();
+    for (int i=0; i<numboardcards; ++i) {
+      
+    }
+
+  } else {
+    //Not sure what to do with this, for now just return 9001 since it is impossibly high, but
+    //potential bug testing
+    return 9001;
+  }
+}
+
+
 //mutates val to a flush hand if there is a flush between hand and board, makes it an error
 //HandValue otherwise.
 void Hand::flush_hand(Board *theBoard, HandValue &val) {

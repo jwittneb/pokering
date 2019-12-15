@@ -1,11 +1,10 @@
 #ifndef __RANGE_ENTRY_H__
 #define __RANGE_ENTRY_H__
-#include "card.h"
 #include <string>
+#include "hand.h"
 
 class RangeEntry {
-  Card *card1;
-  Card *card2;
+  Hand *entry;
 
   std::string action;
   public:
@@ -13,6 +12,7 @@ class RangeEntry {
     Card *get_card2();
 
     RangeEntry();
+    RangeEntry(Hand *input);
     RangeEntry(Card card1, Card card2);
     ~RangeEntry();
 };

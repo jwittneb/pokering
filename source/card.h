@@ -15,6 +15,7 @@ class Card {
 
     Card(cardValue value, cardSuit suit);
     Card(int value, int suit);
+    Card();
     ~Card();
 };
 

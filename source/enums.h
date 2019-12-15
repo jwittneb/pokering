@@ -7,6 +7,7 @@ const int NUM_CARD_VALUES = 13;
 const int NUM_CARD_SUITS = 4;
 
 enum cardSuit {
+  error = -1,
   club = 0, 
   spade, 
   diamond,
@@ -14,6 +15,7 @@ enum cardSuit {
 };
 
 enum cardValue {
+  error = -1,
   two = 0,
   three,
   four,

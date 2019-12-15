@@ -4,6 +4,7 @@
 #include "handvalue.h"
 #include "enums.h"
 #include "board.h"
+#include "deck.h"
 
 //Note: a standard "Hand" class should have hole1 >= hole2.
 //ie. hand1 = Jc, hand2 = 10s would be a valid Hand, whereas
@@ -24,6 +25,8 @@ class Hand {
   void flush_hand(Board *theBoard, HandValue &val);
   void get_suitity(Board *theBoard);
   void reset_suitity();
+
+  int pot_imp_1(Board *theBoard);
 
   public:  
     Card *get_card1();
